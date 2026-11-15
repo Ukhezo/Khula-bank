@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khula Bank - Interactive Portfolio Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- AUTHENTICATION SCREEN -->
+    <div id="auth-screen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 border border-slate-100">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-emerald-600 text-white rounded-2xl text-2xl font-bold mb-3 shadow-lg shadow-emerald-600/30">
+                    <i class="fa-solid fa-building-columns"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Khula Bank</h1>
+                <p class="text-sm text-slate-500 mt-1">South African banking interface demo</p>
+            </div>
+
+            <form id="login-form" class="space-y-5" onsubmit="handleLogin(event)">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Demo Client ID</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                            <i class="fa-solid fa-id-card"></i>
+                        </span>
+                        <input type="text" id="login-id" required value="DEMO-CLIENT" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Demo PIN</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input type="password" id="login-pin" required maxlength="5" value="00000" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm tracking-widest focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/20 transition duration-200">
+                    Open Demo Dashboard
+                </button>
+            </form>
+
+            <div class="mt-6 pt-6 border-t border-slate-100 text-center text-xs text-slate-400">
+                <p>Portfolio demo only — no real accounts, transfers, or financial services.</p>
+                <p class="mt-1 font-medium text-slate-600">Demo ID: DEMO-CLIENT | Demo PIN: 00000</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP INTERFACE -->
+    <div id="app-screen" class="flex-1 flex flex-col hidden">
+        <!-- Top Navigation -->
+        <header class="bg-slate-900 text-white shadow-md sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-emerald-500 text-slate-900 rounded-xl flex items-center justify-center font-bold text-lg shadow">
+                        <i class="fa-solid fa-building-columns"></i>
+                    </div>
+                    <div>
+                        <span class="font-bold text-lg tracking-wide">Khula Bank</span>
+                        <span class="hidden sm:inline-block ml-2 text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30">Portfolio Demo</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <div class="text-right hidden sm:block">
+                        <div class="text-sm font-medium text-white" id="nav-username">Khula Demo User</div>
+                        <div class="text-xs text-slate-400">Demo ID: <span id="nav-userid">DEMO-CLIENT</span></div>
+                    </div>
+                    <button onclick="handleLogout()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-3.5 py-2 rounded-xl text-xs font-semibold transition border border-slate-700">
+                        <i class="fa-solid fa-power-off mr-1.5"></i> Sign Out
+                    </button>
+                </div>
+            </div>
+        </header>
+        <div class="bg-amber-50 text-amber-900 text-xs font-medium text-center px-4 py-2" role="note">
+            Demo only — no real accounts, transfers, or financial services. Use fictional details only.
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
+            
+            <!-- Sidebar Navigation -->
+            <div class="lg:col-span-1 space-y-2">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 space-y-1">
+                    <button onclick="switchTab('dashboard')" id="btn-dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold text-emerald-600 bg-emerald-50 transition">
+                        <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                        <span>Dashboard</span>
+                    </button>
+                    <button onclick="switchTab('transfer')" id="btn-transfer" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 transition">
+                        <i class="fa-solid fa-paper-plane w-5 text-center"></i>
+                        <span>Transfers (EFT)</span>
+                    </button>
+                    <button onclick="switchTab('bills')" id="btn-bills" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 transition">
+                        <i class="fa-solid fa-receipt w-5 text-center"></i>
+                        <span>Pay Bills & Airtime</span>
+                    </button>
+                    <button onclick="switchTab('savings')" id="btn-savings" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 transition">
+                        <i class="fa-solid fa-piggy-bank w-5 text-center"></i>
+                        <span>Savings Pots</span>
+                    </button>
+                </div>
+
+                <!-- Quick Help Card -->
+                <div class="bg-gradient-to-br from-emerald-900 to-slate-900 text-white p-5 rounded-2xl shadow-md">
+                    <div class="text-xs uppercase tracking-wider text-emerald-400 font-semibold mb-1">Khula Care</div>
+                    <div class="text-sm font-medium mb-3">Need assistance with your account?</div>
+                    <div class="inline-flex items-center justify-center w-full bg-emerald-600 text-white text-xs font-semibold py-2.5 rounded-xl">
+                        <i class="fa-solid fa-circle-info mr-2"></i> Demo support — not connected
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Views Container -->
+            <div class="lg:col-span-3 space-y-6">
+
+                <!-- DASHBOARD TAB -->
+                <div id="tab-dashboard" class="tab-content active space-y-6">
+                    <!-- Balance Banner -->
+                    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+                        <div class="absolute right-0 bottom-0 opacity-10 translate-x-10 translate-y-10 text-9xl">
+                            <i class="fa-solid fa-building-columns"></i>
+                        </div>
+                        <div class="relative z-10">
+                            <div class="text-xs uppercase tracking-widest text-emerald-400 font-semibold mb-1">Cheque Account</div>
+                            <div class="text-xs text-slate-400 mb-4">Demo Acc No: <span class="font-mono text-slate-200">0000000000</span></div>
+                            <div class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-6" id="account-balance">R 25,000.00</div>
+                            <div class="flex flex-wrap gap-3">
+                                <button onclick="switchTab('transfer')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-xs font-semibold transition shadow">
+                                    <i class="fa-solid fa-arrow-up-right-from-square mr-1.5"></i> Transfer Money
+                                </button>
+                                <button onclick="switchTab('bills')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white px-4 py-2.5 rounded-xl text-xs font-semibold transition border border-slate-700">
+                                    <i class="fa-solid fa-bolt mr-1.5"></i> Pay Bills / Airtime
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                            <div class="text-xs text-slate-500 font-medium mb-1">Monthly Income</div>
+                            <div class="text-xl font-bold text-emerald-600">R 32,500.00</div>
+                            <div class="text-xs text-slate-400 mt-1"><i class="fa-solid fa-arrow-trend-up text-emerald-500 mr-1"></i>Salary credited Nov 1</div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                            <div class="text-xs text-slate-500 font-medium mb-1">Monthly Spent</div>
+                            <div class="text-xl font-bold text-slate-900">R 14,250.00</div>
+                            <div class="text-xs text-slate-400 mt-1">Across bills & groceries</div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                            <div class="text-xs text-slate-500 font-medium mb-1">Savings Pot</div>
+                            <div class="text-xl font-bold text-indigo-600">R 12,500.00</div>
+                            <div class="text-xs text-slate-400 mt-1">Target: R 20,000.00</div>
+                        </div>
+                    </div>
+
+                    <!-- Transaction History -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                            <h3 class="font-bold text-slate-800 text-sm">Recent Transactions</h3>
+                            <span class="text-xs text-slate-400">Sample activity</span>
+                        </div>
+                        <div class="divide-y divide-slate-100" id="transaction-list">
+                            <div class="px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                                        <i class="fa-solid fa-shopping-cart"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-semibold text-slate-900">Checkers Hyper</div>
+                                        <div class="text-xs text-slate-400">14 Nov 2026, 14:32</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-bold text-rose-600">-R 850.00</div>
+                                    <div class="text-xs text-slate-400">Card Purchase</div>
+                                </div>
+                            </div>
+                            <div class="px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                                        <i class="fa-solid fa-bolt"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-semibold text-slate-900">Eskom Prepaid Electricity</div>
+                                        <div class="text-xs text-slate-400">12 Nov 2026, 09:15</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-bold text-rose-600">-R 600.00</div>
+                                    <div class="text-xs text-slate-400">Utility Bill</div>
+                                </div>
+                            </div>
+                            <div class="px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                                        <i class="fa-solid fa-arrow-down"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-semibold text-slate-900">Salary Deposit - Acme Corp</div>
+                                        <div class="text-xs text-slate-400">01 Nov 2026, 06:00</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-bold text-emerald-600">+R 32,500.00</div>
+                                    <div class="text-xs text-slate-400">EFT Credit</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TRANSFERS TAB -->
+                <div id="tab-transfer" class="tab-content space-y-6">
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+                        <h3 class="text-lg font-bold text-slate-900 mb-1">Make a Bank Transfer (EFT)</h3>
+                        <p class="text-xs text-slate-500 mb-6">Simulate a transfer to a South African bank. No money moves.</p>
+                        
+                        <form id="transfer-form" onsubmit="handleTransfer(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Recipient Bank</label>
+                                <select id="dest-bank" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                    <option value="Capitec Bank">Capitec Bank</option>
+                                    <option value="FNB">First National Bank (FNB)</option>
+                                    <option value="Absa">Absa Bank</option>
+                                    <option value="Standard Bank">Standard Bank</option>
+                                    <option value="Nedbank">Nedbank</option>
+                                    <option value="TymeBank">TymeBank</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Beneficiary Name</label>
+                                    <input type="text" id="dest-name" required placeholder="e.g. Sipho Dlamini" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Account Number</label>
+                                    <input type="text" id="dest-account" required placeholder="e.g. 1029384756" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Amount (Rands)</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 font-bold">R</span>
+                                    <input type="number" id="transfer-amount" required min="1" step="0.01" placeholder="0.00" class="w-full pl-9 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Reference</label>
+                                <input type="text" id="transfer-ref" required placeholder="e.g. Rent / Groceries" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            </div>
+                            <button type="submit" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/20 transition">
+                                Confirm & Transfer Funds
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- BILLS & AIRTIME TAB -->
+                <div id="tab-bills" class="tab-content space-y-6">
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+                        <h3 class="text-lg font-bold text-slate-900 mb-1">Buy Prepaid Airtime, Data, & Utilities</h3>
+                        <p class="text-xs text-slate-500 mb-6">Simulate prepaid purchases. No vouchers are issued.</p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                            <button onclick="selectBillType('airtime')" id="type-airtime" class="p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-800 font-semibold text-sm flex flex-col items-center justify-center transition">
+                                <i class="fa-solid fa-mobile-screen text-xl mb-2"></i> Airtime / Data
+                            </button>
+                            <button onclick="selectBillType('electricity')" id="type-electricity" class="p-4 rounded-xl border-2 border-slate-200 hover:border-slate-300 text-slate-700 font-semibold text-sm flex flex-col items-center justify-center transition">
+                                <i class="fa-solid fa-bolt text-xl mb-2"></i> Eskom Electricity
+                            </button>
+                            <button onclick="selectBillType('water')" id="type-water" class="p-4 rounded-xl border-2 border-slate-200 hover:border-slate-300 text-slate-700 font-semibold text-sm flex flex-col items-center justify-center transition">
+                                <i class="fa-solid fa-droplet text-xl mb-2"></i> Municipal Water
+                            </button>
+                        </div>
+
+                        <form id="bill-form" onsubmit="handleBillPayment(event)" class="space-y-4">
+                            <div id="field-provider">
+                                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Network Provider</label>
+                                <select id="bill-provider" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                    <option value="Vodacom">Vodacom</option>
+                                    <option value="MTN">MTN</option>
+                                    <option value="Telkom">Telkom Mobile</option>
+                                    <option value="Cell C">Cell C</option>
+                                </select>
+                            </div>
+                            <div id="field-target">
+                                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1" id="target-label">Mobile Number</label>
+                                <input type="text" id="bill-target" required placeholder="082 123 4567" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Amount (Rands)</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 font-bold">R</span>
+                                    <input type="number" id="bill-amount" required min="10" step="1" placeholder="100" class="w-full pl-9 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/20 transition">
+                                Pay Now
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- SAVINGS POTS TAB -->
+                <div id="tab-savings" class="tab-content space-y-6">
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-900">Khula Goal Pots</h3>
+                                <p class="text-xs text-slate-500">Earn interest on your dedicated savings buckets.</p>
+                            </div>
+                            <button onclick="alert('New savings pot feature activated!')" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3.5 py-2 rounded-xl text-xs font-semibold transition">
+                                <i class="fa-solid fa-plus mr-1"></i> New Pot
+                            </button>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold text-slate-900 text-sm">Emergency Fund</span>
+                                    <span class="text-xs font-semibold text-emerald-600 bg-emerald-100 px-2.5 py-1 rounded-full">62% Saved</span>
+                                </div>
+                                <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden mb-3">
+                                    <div class="bg-emerald-600 h-full rounded-full" style="width: 62%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs text-slate-500">
+                                    <span>Current: R 12,500.00</span>
+                                    <span>Goal: R 20,000.00</span>
+                                </div>
+                            </div>
+
+                            <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold text-slate-900 text-sm">December Holiday</span>
+                                    <span class="text-xs font-semibold text-indigo-600 bg-indigo-100 px-2.5 py-1 rounded-full">85% Saved</span>
+                                </div>
+                                <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden mb-3">
+                                    <div class="bg-indigo-600 h-full rounded-full" style="width: 85%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs text-slate-500">
+                                    <span>Current: R 8,500.00</span>
+                                    <span>Goal: R 10,000.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        let currentBalance = 25000.00;
+        let currentBillType = 'airtime';
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const idNumber = document.getElementById('login-id').value;
+            const pin = document.getElementById('login-pin').value;
+            
+            if(idNumber === "DEMO-CLIENT" && pin === "00000") {
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('app-screen').classList.remove('hidden');
+                updateBalanceDisplay();
+            } else {
+                alert("Use the demo ID and PIN shown on the sign-in screen.");
+            }
+        }
+
+        function handleLogout() {
+            document.getElementById('app-screen').classList.add('hidden');
+            document.getElementById('auth-screen').classList.remove('hidden');
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('aside button, .lg\\:col-span-1 button').forEach(el => {
+                el.classList.remove('text-emerald-600', 'bg-emerald-50');
+                el.classList.add('text-slate-600', 'hover:bg-slate-50');
+            });
+            
+            document.getElementById('tab-' + tabId).classList.add('active');
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if(activeBtn) {
+                activeBtn.classList.remove('text-slate-600', 'hover:bg-slate-50');
+                activeBtn.classList.add('text-emerald-600', 'bg-emerald-50');
+            }
+        }
+
+        function updateBalanceDisplay() {
+            document.getElementById('account-balance').innerText = 'R ' + currentBalance.toLocaleString('en-ZA', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+
+        function addTransaction(title, amount, type) {
+            const list = document.getElementById('transaction-list');
+            const dateStr = new Date().toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'});
+            const timeStr = new Date().toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit'});
+            const safeTitle = title.replace(/[&<>"']/g, character => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[character]);
+            
+            const isCredit = type === 'credit';
+            const sign = isCredit ? '+' : '-';
+            const colorClass = isCredit ? 'text-emerald-600' : 'text-rose-600';
+            const icon = isCredit ? 'fa-arrow-down' : 'fa-paper-plane';
+            const bgIcon = isCredit ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600';
+
+            const item = document.createElement('div');
+            item.className = "px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition";
+            item.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl ${bgIcon} flex items-center justify-center font-bold">
+                        <i class="fa-solid ${icon}"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm font-semibold text-slate-900">${safeTitle}</div>
+                        <div class="text-xs text-slate-400">${dateStr}, ${timeStr}</div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm font-bold ${colorClass}">${sign}R ${Math.abs(amount).toLocaleString('en-ZA', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                    <div class="text-xs text-slate-400">${isCredit ? 'EFT Credit' : 'EFT Debit'}</div>
+                </div>
+            `;
+            list.insertBefore(item, list.firstChild);
+        }
+
+        function handleTransfer(e) {
+            e.preventDefault();
+            const bank = document.getElementById('dest-bank').value;
+            const name = document.getElementById('dest-name').value;
+            const amount = parseFloat(document.getElementById('transfer-amount').value);
+            const ref = document.getElementById('transfer-ref').value;
+
+            if(amount > currentBalance) {
+                alert("Insufficient funds in your Khula Bank account.");
+                return;
+            }
+
+            currentBalance -= amount;
+            updateBalanceDisplay();
+            addTransaction(`Transfer to ${name} (${bank})`, amount, 'debit');
+
+            alert(`Successfully transferred R ${amount.toFixed(2)} to ${name} via ${bank}!\nReference: ${ref}`);
+            document.getElementById('transfer-form').reset();
+            switchTab('dashboard');
+        }
+
+        function selectBillType(type) {
+            currentBillType = type;
+            ['airtime', 'electricity', 'water'].forEach(t => {
+                const btn = document.getElementById('type-' + t);
+                if(t === type) {
+                    btn.className = "p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-800 font-semibold text-sm flex flex-col items-center justify-center transition";
+                } else {
+                    btn.className = "p-4 rounded-xl border-2 border-slate-200 hover:border-slate-300 text-slate-700 font-semibold text-sm flex flex-col items-center justify-center transition";
+                }
+            });
+
+            const providerField = document.getElementById('field-provider');
+            const targetLabel = document.getElementById('target-label');
+            const targetInput = document.getElementById('bill-target');
+
+            if(type === 'airtime') {
+                providerField.style.display = 'block';
+                targetLabel.innerText = 'Mobile Number';
+                targetInput.placeholder = '082 123 4567';
+            } else if(type === 'electricity') {
+                providerField.style.display = 'none';
+                targetLabel.innerText = 'Eskom Meter Number';
+                targetInput.placeholder = '04123456789';
+            } else {
+                providerField.style.display = 'none';
+                targetLabel.innerText = 'Municipal Account Number';
+                targetInput.placeholder = 'MUN98765432';
+            }
+        }
+
+        function handleBillPayment(e) {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('bill-amount').value);
+            const target = document.getElementById('bill-target').value;
+            let title = '';
+
+            if(currentBillType === 'airtime') {
+                const provider = document.getElementById('bill-provider').value;
+                title = `${provider} Airtime (${target})`;
+            } else if(currentBillType === 'electricity') {
+                title = `Eskom Prepaid (${target})`;
+            } else {
+                title = `Municipal Water Bill (${target})`;
+            }
+
+            if(amount > currentBalance) {
+                alert("Insufficient funds in your account.");
+                return;
+            }
+
+            currentBalance -= amount;
+            updateBalanceDisplay();
+            addTransaction(title, amount, 'debit');
+
+            alert(`Payment of R ${amount.toFixed(2)} successful!\nVoucher / Token generated for ${target}.`);
+            document.getElementById('bill-form').reset();
+            switchTab('dashboard');
+        }
+    </script>
+</body>
+</html>
