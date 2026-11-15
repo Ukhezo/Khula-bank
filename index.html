@@ -4,7 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Khula Bank - Interactive Portfolio Demo</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <meta name="description" content="Khula Bank is a portfolio demo of a South African online banking dashboard: balances, EFT transfers, prepaid airtime and electricity, and savings pots. Fictional sample data only.">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23059669'/%3E%3Cpath d='M16 6 6 11v2h20v-2zM8 14h3v8H8zm6.5 0h3v8h-3zM21 14h3v8h-3zM6 23h20v3H6z' fill='white'/%3E%3C/svg%3E">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Khula Bank — banking interface demo">
+    <meta property="og:description" content="A responsive South African banking dashboard demo built with HTML, Tailwind CSS and JavaScript. Fictional data only.">
+    <meta property="og:url" content="https://ukhezo.github.io/Khula-bank/">
+    <meta property="og:image" content="https://ukhezo.github.io/Khula-bank/images/screenshot.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="css/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -50,6 +59,7 @@
                 <button type="submit" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/20 transition duration-200">
                     Open Demo Dashboard
                 </button>
+            <p id="login-error" class="hidden text-sm text-rose-600 text-center" role="alert">Use the demo ID and PIN shown below.</p>
             </form>
 
             <div class="mt-6 pt-6 border-t border-slate-100 text-center text-xs text-slate-400">
@@ -114,7 +124,7 @@
                 </div>
 
                 <!-- Quick Help Card -->
-                <div class="bg-gradient-to-br from-emerald-900 to-slate-900 text-white p-5 rounded-2xl shadow-md">
+                <div class="hidden lg:block bg-gradient-to-br from-emerald-900 to-slate-900 text-white p-5 rounded-2xl shadow-md">
                     <div class="text-xs uppercase tracking-wider text-emerald-400 font-semibold mb-1">Khula Care</div>
                     <div class="text-sm font-medium mb-3">Need assistance with your account?</div>
                     <div class="inline-flex items-center justify-center w-full bg-emerald-600 text-white text-xs font-semibold py-2.5 rounded-xl">
@@ -136,7 +146,7 @@
                         <div class="relative z-10">
                             <div class="text-xs uppercase tracking-widest text-emerald-400 font-semibold mb-1">Cheque Account</div>
                             <div class="text-xs text-slate-400 mb-4">Demo Acc No: <span class="font-mono text-slate-200">0000000000</span></div>
-                            <div class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-6" id="account-balance">R 25,000.00</div>
+                            <div class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-6" id="account-balance">R 25 000.00</div>
                             <div class="flex flex-wrap gap-3">
                                 <button onclick="switchTab('transfer')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-xs font-semibold transition shadow">
                                     <i class="fa-solid fa-arrow-up-right-from-square mr-1.5"></i> Transfer Money
@@ -152,18 +162,18 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                             <div class="text-xs text-slate-500 font-medium mb-1">Monthly Income</div>
-                            <div class="text-xl font-bold text-emerald-600">R 32,500.00</div>
+                            <div class="text-xl font-bold text-emerald-600">R 32 500.00</div>
                             <div class="text-xs text-slate-400 mt-1"><i class="fa-solid fa-arrow-trend-up text-emerald-500 mr-1"></i>Salary credited Nov 1</div>
                         </div>
                         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                             <div class="text-xs text-slate-500 font-medium mb-1">Monthly Spent</div>
-                            <div class="text-xl font-bold text-slate-900">R 14,250.00</div>
+                            <div class="text-xl font-bold text-slate-900" id="monthly-spent">R 14 250.00</div>
                             <div class="text-xs text-slate-400 mt-1">Across bills & groceries</div>
                         </div>
                         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                            <div class="text-xs text-slate-500 font-medium mb-1">Savings Pot</div>
-                            <div class="text-xl font-bold text-indigo-600">R 12,500.00</div>
-                            <div class="text-xs text-slate-400 mt-1">Target: R 20,000.00</div>
+                            <div class="text-xs text-slate-500 font-medium mb-1">Total Saved</div>
+                            <div class="text-xl font-bold text-indigo-600" id="savings-total">R 21 000.00</div>
+                            <div class="text-xs text-slate-400 mt-1" id="savings-target">Across 2 goal pots</div>
                         </div>
                     </div>
 
@@ -215,7 +225,7 @@
                                     </div>
                                 </div>
                                 <div class="text-right">
-                                    <div class="text-sm font-bold text-emerald-600">+R 32,500.00</div>
+                                    <div class="text-sm font-bold text-emerald-600">+R 32 500.00</div>
                                     <div class="text-xs text-slate-400">EFT Credit</div>
                                 </div>
                             </div>
@@ -248,7 +258,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Account Number</label>
-                                    <input type="text" id="dest-account" required placeholder="e.g. 1029384756" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                    <input type="text" id="dest-account" required inputmode="numeric" pattern="[0-9]{6,11}" title="Enter a 6 to 11 digit account number" placeholder="e.g. 1029384756" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                                 </div>
                             </div>
                             <div>
@@ -276,13 +286,13 @@
                         <p class="text-xs text-slate-500 mb-6">Simulate prepaid purchases. No vouchers are issued.</p>
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                            <button onclick="selectBillType('airtime')" id="type-airtime" class="p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-800 font-semibold text-sm flex flex-col items-center justify-center transition">
+                            <button type="button" onclick="selectBillType('airtime')" id="type-airtime" class="p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-800 font-semibold text-sm flex flex-col items-center justify-center transition">
                                 <i class="fa-solid fa-mobile-screen text-xl mb-2"></i> Airtime / Data
                             </button>
-                            <button onclick="selectBillType('electricity')" id="type-electricity" class="p-4 rounded-xl border-2 border-slate-200 hover:border-slate-300 text-slate-700 font-semibold text-sm flex flex-col items-center justify-center transition">
+                            <button type="button" onclick="selectBillType('electricity')" id="type-electricity" class="p-4 rounded-xl border-2 border-slate-200 hover:border-slate-300 text-slate-700 font-semibold text-sm flex flex-col items-center justify-center transition">
                                 <i class="fa-solid fa-bolt text-xl mb-2"></i> Eskom Electricity
                             </button>
-                            <button onclick="selectBillType('water')" id="type-water" class="p-4 rounded-xl border-2 border-slate-200 hover:border-slate-300 text-slate-700 font-semibold text-sm flex flex-col items-center justify-center transition">
+                            <button type="button" onclick="selectBillType('water')" id="type-water" class="p-4 rounded-xl border-2 border-slate-200 hover:border-slate-300 text-slate-700 font-semibold text-sm flex flex-col items-center justify-center transition">
                                 <i class="fa-solid fa-droplet text-xl mb-2"></i> Municipal Water
                             </button>
                         </div>
@@ -318,44 +328,27 @@
                 <!-- SAVINGS POTS TAB -->
                 <div id="tab-savings" class="tab-content space-y-6">
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
-                        <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center justify-between gap-3 mb-4">
                             <div>
                                 <h3 class="text-lg font-bold text-slate-900">Khula Goal Pots</h3>
                                 <p class="text-xs text-slate-500">Earn interest on your dedicated savings buckets.</p>
                             </div>
-                            <button onclick="alert('New savings pot feature activated!')" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3.5 py-2 rounded-xl text-xs font-semibold transition">
+                            <button type="button" onclick="toggleNewPot()" class="shrink-0 whitespace-nowrap bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3.5 py-2 rounded-xl text-xs font-semibold transition">
                                 <i class="fa-solid fa-plus mr-1"></i> New Pot
                             </button>
                         </div>
-                        <div class="space-y-4">
-                            <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="font-bold text-slate-900 text-sm">Emergency Fund</span>
-                                    <span class="text-xs font-semibold text-emerald-600 bg-emerald-100 px-2.5 py-1 rounded-full">62% Saved</span>
-                                </div>
-                                <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden mb-3">
-                                    <div class="bg-emerald-600 h-full rounded-full" style="width: 62%"></div>
-                                </div>
-                                <div class="flex justify-between text-xs text-slate-500">
-                                    <span>Current: R 12,500.00</span>
-                                    <span>Goal: R 20,000.00</span>
-                                </div>
+                        <form id="new-pot-form" class="hidden mb-5 p-5 rounded-2xl border border-emerald-200 bg-emerald-50/60 grid gap-3 sm:grid-cols-[1fr_160px_auto] sm:items-end" onsubmit="handleNewPot(event)">
+                            <div>
+                                <label for="pot-name" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Pot name</label>
+                                <input type="text" id="pot-name" required maxlength="30" placeholder="e.g. New Laptop" class="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                             </div>
-
-                            <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="font-bold text-slate-900 text-sm">December Holiday</span>
-                                    <span class="text-xs font-semibold text-indigo-600 bg-indigo-100 px-2.5 py-1 rounded-full">85% Saved</span>
-                                </div>
-                                <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden mb-3">
-                                    <div class="bg-indigo-600 h-full rounded-full" style="width: 85%"></div>
-                                </div>
-                                <div class="flex justify-between text-xs text-slate-500">
-                                    <span>Current: R 8,500.00</span>
-                                    <span>Goal: R 10,000.00</span>
-                                </div>
+                            <div>
+                                <label for="pot-goal" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Goal (rands)</label>
+                                <input type="number" id="pot-goal" required min="100" step="1" placeholder="5000" class="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                             </div>
-                        </div>
+                            <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-3 rounded-xl text-sm font-semibold transition">Create pot</button>
+                        </form>
+                        <div class="space-y-4" id="pot-list"></div>
                     </div>
                 </div>
 
@@ -363,104 +356,142 @@
         </div>
     </div>
 
+    <div id="toast" role="status" aria-live="polite" class="fixed left-1/2 bottom-6 z-[60] -translate-x-1/2 translate-y-4 opacity-0 pointer-events-none transition duration-200 max-w-[calc(100vw-2rem)] px-5 py-3 rounded-xl bg-slate-900 text-white text-sm font-medium shadow-xl flex items-center gap-2"></div>
+
     <!-- JavaScript Application Logic -->
     <script>
         let currentBalance = 25000.00;
+        let monthlySpent = 14250.00;
         let currentBillType = 'airtime';
+        const pots = [
+            { name: 'Emergency Fund', saved: 12500, goal: 20000, color: 'emerald' },
+            { name: 'December Holiday', saved: 8500, goal: 10000, color: 'indigo' }
+        ];
+        const potColors = {
+            emerald: { bar: 'bg-emerald-600', badge: 'text-emerald-600 bg-emerald-100' },
+            indigo: { bar: 'bg-indigo-600', badge: 'text-indigo-600 bg-indigo-100' },
+            amber: { bar: 'bg-amber-500', badge: 'text-amber-700 bg-amber-100' },
+            rose: { bar: 'bg-rose-500', badge: 'text-rose-600 bg-rose-100' }
+        };
+        let toastTimer;
+
+        // One money format everywhere: R 25 000.00
+        function formatRand(value) {
+            const [whole, cents] = Math.abs(value).toFixed(2).split('.');
+            return 'R ' + whole.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + '.' + cents;
+        }
+
+        function escapeHtml(text) {
+            return String(text).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = type === 'error' ? 'fa-circle-exclamation text-rose-400' : 'fa-circle-check text-emerald-400';
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${escapeHtml(message)}</span>`;
+            toast.classList.remove('opacity-0', 'translate-y-4');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.add('opacity-0', 'translate-y-4'), 3200);
+        }
 
         function handleLogin(e) {
             e.preventDefault();
-            const idNumber = document.getElementById('login-id').value;
+            const idNumber = document.getElementById('login-id').value.trim();
             const pin = document.getElementById('login-pin').value;
-            
-            if(idNumber === "DEMO-CLIENT" && pin === "00000") {
+            const error = document.getElementById('login-error');
+
+            if (idNumber === 'DEMO-CLIENT' && pin === '00000') {
+                error.classList.add('hidden');
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('app-screen').classList.remove('hidden');
                 updateBalanceDisplay();
             } else {
-                alert("Use the demo ID and PIN shown on the sign-in screen.");
+                error.classList.remove('hidden');
             }
         }
 
         function handleLogout() {
             document.getElementById('app-screen').classList.add('hidden');
             document.getElementById('auth-screen').classList.remove('hidden');
+            switchTab('dashboard');
         }
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('aside button, .lg\\:col-span-1 button').forEach(el => {
+            document.querySelectorAll('[id^="btn-"]').forEach(el => {
                 el.classList.remove('text-emerald-600', 'bg-emerald-50');
                 el.classList.add('text-slate-600', 'hover:bg-slate-50');
+                el.removeAttribute('aria-current');
             });
-            
+
             document.getElementById('tab-' + tabId).classList.add('active');
             const activeBtn = document.getElementById('btn-' + tabId);
-            if(activeBtn) {
+            if (activeBtn) {
                 activeBtn.classList.remove('text-slate-600', 'hover:bg-slate-50');
                 activeBtn.classList.add('text-emerald-600', 'bg-emerald-50');
+                activeBtn.setAttribute('aria-current', 'page');
             }
         }
 
         function updateBalanceDisplay() {
-            document.getElementById('account-balance').innerText = 'R ' + currentBalance.toLocaleString('en-ZA', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('account-balance').textContent = formatRand(currentBalance);
+            document.getElementById('monthly-spent').textContent = formatRand(monthlySpent);
+            const totalSaved = pots.reduce((sum, pot) => sum + pot.saved, 0);
+            document.getElementById('savings-total').textContent = formatRand(totalSaved);
+            document.getElementById('savings-target').textContent = `Across ${pots.length} goal pot${pots.length === 1 ? '' : 's'}`;
         }
 
-        function addTransaction(title, amount, type) {
+        function addTransaction(title, amount, type, label) {
             const list = document.getElementById('transaction-list');
-            const dateStr = new Date().toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'});
-            const timeStr = new Date().toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit'});
-            const safeTitle = title.replace(/[&<>"']/g, character => ({
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#39;'
-            })[character]);
-            
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+            const timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
             const isCredit = type === 'credit';
-            const sign = isCredit ? '+' : '-';
             const colorClass = isCredit ? 'text-emerald-600' : 'text-rose-600';
-            const icon = isCredit ? 'fa-arrow-down' : 'fa-paper-plane';
-            const bgIcon = isCredit ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600';
+            const icon = isCredit ? 'fa-arrow-down' : ({ 'Savings': 'fa-piggy-bank', 'Prepaid / Bill': 'fa-bolt' })[label] || 'fa-paper-plane';
+            const bgIcon = isCredit ? 'bg-emerald-50 text-emerald-600' : ({ 'Savings': 'bg-indigo-50 text-indigo-600', 'Prepaid / Bill': 'bg-blue-50 text-blue-600' })[label] || 'bg-rose-50 text-rose-600';
 
             const item = document.createElement('div');
-            item.className = "px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition";
+            item.className = 'px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition';
             item.innerHTML = `
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-xl ${bgIcon} flex items-center justify-center font-bold">
+                <div class="flex items-center space-x-3 min-w-0">
+                    <div class="w-10 h-10 shrink-0 rounded-xl ${bgIcon} flex items-center justify-center font-bold">
                         <i class="fa-solid ${icon}"></i>
                     </div>
-                    <div>
-                        <div class="text-sm font-semibold text-slate-900">${safeTitle}</div>
+                    <div class="min-w-0">
+                        <div class="text-sm font-semibold text-slate-900 truncate">${escapeHtml(title)}</div>
                         <div class="text-xs text-slate-400">${dateStr}, ${timeStr}</div>
                     </div>
                 </div>
-                <div class="text-right">
-                    <div class="text-sm font-bold ${colorClass}">${sign}R ${Math.abs(amount).toLocaleString('en-ZA', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
-                    <div class="text-xs text-slate-400">${isCredit ? 'EFT Credit' : 'EFT Debit'}</div>
+                <div class="text-right shrink-0 pl-3">
+                    <div class="text-sm font-bold ${colorClass}">${isCredit ? '+' : '-'}${formatRand(amount)}</div>
+                    <div class="text-xs text-slate-400">${escapeHtml(label || (isCredit ? 'EFT Credit' : 'EFT Debit'))}</div>
                 </div>
             `;
             list.insertBefore(item, list.firstChild);
         }
 
+        function spend(amount) {
+            if (amount > currentBalance) {
+                showToast(`Insufficient funds. Available balance: ${formatRand(currentBalance)}`, 'error');
+                return false;
+            }
+            currentBalance -= amount;
+            monthlySpent += amount;
+            updateBalanceDisplay();
+            return true;
+        }
+
         function handleTransfer(e) {
             e.preventDefault();
             const bank = document.getElementById('dest-bank').value;
-            const name = document.getElementById('dest-name').value;
+            const name = document.getElementById('dest-name').value.trim();
             const amount = parseFloat(document.getElementById('transfer-amount').value);
-            const ref = document.getElementById('transfer-ref').value;
 
-            if(amount > currentBalance) {
-                alert("Insufficient funds in your Khula Bank account.");
-                return;
-            }
-
-            currentBalance -= amount;
-            updateBalanceDisplay();
-            addTransaction(`Transfer to ${name} (${bank})`, amount, 'debit');
-
-            alert(`Successfully transferred R ${amount.toFixed(2)} to ${name} via ${bank}!\nReference: ${ref}`);
+            if (!spend(amount)) return;
+            addTransaction(`Transfer to ${name} (${bank})`, amount, 'debit', 'EFT Debit');
+            showToast(`${formatRand(amount)} sent to ${name} at ${bank}.`);
             document.getElementById('transfer-form').reset();
             switchTab('dashboard');
         }
@@ -469,10 +500,11 @@
             currentBillType = type;
             ['airtime', 'electricity', 'water'].forEach(t => {
                 const btn = document.getElementById('type-' + t);
-                if(t === type) {
-                    btn.className = "p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-800 font-semibold text-sm flex flex-col items-center justify-center transition";
+                btn.setAttribute('aria-pressed', String(t === type));
+                if (t === type) {
+                    btn.className = 'p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-800 font-semibold text-sm flex flex-col items-center justify-center transition';
                 } else {
-                    btn.className = "p-4 rounded-xl border-2 border-slate-200 hover:border-slate-300 text-slate-700 font-semibold text-sm flex flex-col items-center justify-center transition";
+                    btn.className = 'p-4 rounded-xl border-2 border-slate-200 hover:border-slate-300 text-slate-700 font-semibold text-sm flex flex-col items-center justify-center transition';
                 }
             });
 
@@ -480,49 +512,119 @@
             const targetLabel = document.getElementById('target-label');
             const targetInput = document.getElementById('bill-target');
 
-            if(type === 'airtime') {
+            if (type === 'airtime') {
                 providerField.style.display = 'block';
-                targetLabel.innerText = 'Mobile Number';
+                targetLabel.textContent = 'Mobile Number';
                 targetInput.placeholder = '082 123 4567';
-            } else if(type === 'electricity') {
+                targetInput.pattern = '0[0-9]{2} ?[0-9]{3} ?[0-9]{4}';
+                targetInput.title = 'Enter a 10-digit South African mobile number, e.g. 082 123 4567';
+            } else if (type === 'electricity') {
                 providerField.style.display = 'none';
-                targetLabel.innerText = 'Eskom Meter Number';
+                targetLabel.textContent = 'Eskom Meter Number';
                 targetInput.placeholder = '04123456789';
+                targetInput.pattern = '[0-9]{11}';
+                targetInput.title = 'Enter the 11-digit meter number';
             } else {
                 providerField.style.display = 'none';
-                targetLabel.innerText = 'Municipal Account Number';
+                targetLabel.textContent = 'Municipal Account Number';
                 targetInput.placeholder = 'MUN98765432';
+                targetInput.pattern = '[A-Za-z0-9]{6,14}';
+                targetInput.title = 'Enter your municipal account number';
             }
         }
 
         function handleBillPayment(e) {
             e.preventDefault();
             const amount = parseFloat(document.getElementById('bill-amount').value);
-            const target = document.getElementById('bill-target').value;
+            const target = document.getElementById('bill-target').value.trim();
             let title = '';
+            let done = '';
 
-            if(currentBillType === 'airtime') {
+            if (currentBillType === 'airtime') {
                 const provider = document.getElementById('bill-provider').value;
                 title = `${provider} Airtime (${target})`;
-            } else if(currentBillType === 'electricity') {
+                done = `${formatRand(amount)} ${provider} airtime sent to ${target}.`;
+            } else if (currentBillType === 'electricity') {
                 title = `Eskom Prepaid (${target})`;
+                const token = Array.from({ length: 5 }, () => String(Math.floor(1000 + Math.random() * 9000))).join(' ');
+                done = `Electricity token: ${token}`;
             } else {
                 title = `Municipal Water Bill (${target})`;
+                done = `${formatRand(amount)} paid to municipal account ${target}.`;
             }
 
-            if(amount > currentBalance) {
-                alert("Insufficient funds in your account.");
-                return;
-            }
-
-            currentBalance -= amount;
-            updateBalanceDisplay();
-            addTransaction(title, amount, 'debit');
-
-            alert(`Payment of R ${amount.toFixed(2)} successful!\nVoucher / Token generated for ${target}.`);
+            if (!spend(amount)) return;
+            addTransaction(title, amount, 'debit', 'Prepaid / Bill');
+            showToast(done);
             document.getElementById('bill-form').reset();
+            selectBillType(currentBillType);
             switchTab('dashboard');
         }
+
+        function renderPots() {
+            const list = document.getElementById('pot-list');
+            list.innerHTML = pots.map((pot, i) => {
+                const pct = Math.min(100, Math.round((pot.saved / pot.goal) * 100));
+                const c = potColors[pot.color];
+                return `
+                <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200">
+                    <div class="flex justify-between items-center gap-3 mb-2">
+                        <span class="font-bold text-slate-900 text-sm">${escapeHtml(pot.name)}</span>
+                        <span class="text-xs font-semibold ${c.badge} px-2.5 py-1 rounded-full">${pct}% Saved</span>
+                    </div>
+                    <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden mb-3" role="progressbar" aria-label="${escapeHtml(pot.name)} progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}">
+                        <div class="${c.bar} h-full rounded-full transition-all" style="width: ${pct}%"></div>
+                    </div>
+                    <div class="flex flex-wrap justify-between items-center gap-2 text-xs text-slate-500">
+                        <span>Current: ${formatRand(pot.saved)} &middot; Goal: ${formatRand(pot.goal)}</span>
+                        <form class="flex items-center gap-2" onsubmit="addToPot(event, ${i})">
+                            <label class="sr-only" for="pot-add-${i}">Amount to add to ${escapeHtml(pot.name)}</label>
+                            <input id="pot-add-${i}" type="number" min="10" step="1" required placeholder="R 500" class="w-24 px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <button type="submit" class="bg-slate-900 hover:bg-slate-700 text-white px-3 py-2 rounded-lg text-xs font-semibold transition">Add money</button>
+                        </form>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function toggleNewPot() {
+            const form = document.getElementById('new-pot-form');
+            form.classList.toggle('hidden');
+            if (!form.classList.contains('hidden')) document.getElementById('pot-name').focus();
+        }
+
+        function handleNewPot(e) {
+            e.preventDefault();
+            const name = document.getElementById('pot-name').value.trim();
+            const goal = parseFloat(document.getElementById('pot-goal').value);
+            const colors = Object.keys(potColors);
+            pots.push({ name, saved: 0, goal, color: colors[pots.length % colors.length] });
+            renderPots();
+            updateBalanceDisplay();
+            e.target.reset();
+            e.target.classList.add('hidden');
+            showToast(`"${name}" pot created with a goal of ${formatRand(goal)}.`);
+        }
+
+        function addToPot(e, index) {
+            e.preventDefault();
+            const input = e.target.querySelector('input');
+            const amount = parseFloat(input.value);
+            if (amount > currentBalance) {
+                showToast(`Insufficient funds. Available balance: ${formatRand(currentBalance)}`, 'error');
+                return;
+            }
+            currentBalance -= amount;
+            pots[index].saved += amount;
+            addTransaction(`Moved to ${pots[index].name}`, amount, 'debit', 'Savings');
+            renderPots();
+            updateBalanceDisplay();
+            showToast(`${formatRand(amount)} added to ${pots[index].name}.`);
+        }
+
+        renderPots();
+        selectBillType('airtime');
+        updateBalanceDisplay();
     </script>
 </body>
 </html>
